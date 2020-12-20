@@ -1,22 +1,26 @@
 import React from "react"
-import { Link } from "gatsby"
+import MainLayout from "../layout/mainLayout"
+import Card from "../components/card"
+import styled from "styled-components"
+import backgroundRotatedImg from "../assets/backgroundRotated.svg"
 
-import Layout from "../components/layout"
-import Image from "../components/image"
-import SEO from "../components/seo"
+const StyledWrapper = styled.div`
+  flex: 1;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url(${backgroundRotatedImg});
+`
 
 const IndexPage = () => (
-  <Layout>
-    <SEO title="Home" />
-    <h1>Hi people</h1>
-    <p>Welcome to your new Gatsby site.</p>
-    <p>Now go build something great.</p>
-    <div style={{ maxWidth: `300px`, marginBottom: `1.45rem` }}>
-      <Image />
-    </div>
-    <Link to="/page-2/">Go to page 2</Link> <br />
-    <Link to="/using-typescript/">Go to "Using TypeScript"</Link>
-  </Layout>
+  <MainLayout>
+    <StyledWrapper>
+      <h1>Hi people</h1>
+      <Card>
+        <p>Welcome to your new Gatsby site.</p>
+      </Card>
+      <p>Now go build something great.</p>
+    </StyledWrapper>
+  </MainLayout>
 )
 
 export default IndexPage

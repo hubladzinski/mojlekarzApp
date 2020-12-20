@@ -1,34 +1,41 @@
+import React from "react"
+import styled from "styled-components"
 import { Link } from "gatsby"
 import PropTypes from "prop-types"
-import React from "react"
+import Logo from "./logo"
 
-const Header = ({ siteTitle }) => (
-  <header
-    style={{
-      background: `rebeccapurple`,
-      marginBottom: `1.45rem`,
-    }}
-  >
-    <div
-      style={{
-        margin: `0 auto`,
-        maxWidth: 960,
-        padding: `1.45rem 1.0875rem`,
-      }}
-    >
-      <h1 style={{ margin: 0 }}>
-        <Link
-          to="/"
-          style={{
-            color: `white`,
-            textDecoration: `none`,
-          }}
-        >
-          {siteTitle}
-        </Link>
-      </h1>
-    </div>
-  </header>
+const StyledHeader = styled.header`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
+const StyledH1 = styled.h1`
+  font-size: ${({ theme }) => theme.font.size.m};
+  font-family: ${({ theme }) => theme.font.family.primary};
+  font-weight: 300;
+  margin-left: 10px;
+
+  span {
+    color: ${({ theme }) => theme.colors.primary};
+    font-weight: 400;
+  }
+`
+
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: inherit;
+`
+
+const Header = () => (
+  <StyledHeader>
+    <Logo />
+    <StyledH1>
+      <StyledLink to="/">
+        gdzie mój <span>lekarz?!</span>
+      </StyledLink>
+    </StyledH1>
+  </StyledHeader>
 )
 
 Header.propTypes = {
