@@ -4,7 +4,7 @@ import theme from "../utils/theme"
 import Header from "../components/header"
 
 const GlobalStyle = createGlobalStyle`
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
 
 *, *::before, *::after {
     box-sizing: border-box;
@@ -16,9 +16,18 @@ html, body, #___gatsby, #gatsby-focus-wrapper {
   margin: 0;
 }
 
+h1,h2,h3,h4,h5,p,ul,li {
+  margin: 0;
+}
+
+ul, li {
+  padding: 0;
+}
+
 html {
-    font-size: 62.5%;
-    letter-spacing: 0.12rem;
+  font-size: 62.5%;
+  letter-spacing: 0.12rem;
+  font-family: ${theme.font.family.primary};
 }
 `
 

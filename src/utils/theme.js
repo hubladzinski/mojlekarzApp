@@ -1,7 +1,11 @@
 const theme = {
   colors: {
     primary: "#0254A0",
-    secondary: "FFF",
+    secondary: "#FFF",
+    subText: "#6C6C6CCC",
+    timeGood: "#0DA013",
+    timeOK: "#EDB95E",
+    timeBad: "#E23636",
   },
   font: {
     size: {
