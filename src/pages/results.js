@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { connect } from "react-redux"
 import MainLayout from "../layout/mainLayout"
 import InnerLayout from "../layout/innerLayout"
 import Card from "../components/card"
@@ -13,6 +14,7 @@ import { faTimesCircle } from "@fortawesome/free-solid-svg-icons"
 
 const StyledWrapper = styled.div`
   flex: 1;
+  margin: 0 auto;
 `
 
 const BackgroundContainer = styled.div`
@@ -41,11 +43,19 @@ const StyledH1 = styled.h1`
   ${DefaultHeader};
   font-size: ${({ theme }) => theme.font.size.m};
   margin-top: 2em;
+
+  @media (min-width: 768px) {
+    font-size: ${({ theme }) => theme.font.size.xl};
+  }
 `
 
 const StyledH2 = styled.h2`
   ${DefaultHeader};
   font-size: ${({ theme }) => theme.font.size.s};
+
+  @media (min-width: 768px) {
+    font-size: ${({ theme }) => theme.font.size.l};
+  }
 `
 
 const StyledH3 = styled.h3`
@@ -55,12 +65,21 @@ const StyledH3 = styled.h3`
 const StyledH4 = styled.h4`
   font-size: ${({ theme }) => theme.font.size.s};
   font-weight: 400;
+
+  @media (min-width: 768px) {
+    font-size: ${({ theme }) => theme.font.size.l};
+    margin-right: 0.3em;
+  }
 `
 
 const StyledParagraph1 = styled.p`
   font-size: ${({ theme }) => theme.font.size.s};
   font-weight: 400;
   margin-top: 1em;
+
+  @media (min-width: 768px) {
+    font-size: ${({ theme }) => theme.font.size.m};
+  }
 `
 
 const StyledDaysNum = styled.span`
@@ -73,17 +92,29 @@ const StyledDaysNum = styled.span`
   color: ${({ time }) =>
     time >= 50 && time < 100 ? ({ theme }) => theme.colors.timeOK : false};
   font-weight: 400;
+
+  @media (min-width: 768px) {
+    font-size: ${({ theme }) => theme.font.size.xl};
+  }
 `
 
 const StyledDays = styled.span`
   font-size: ${({ theme }) => theme.font.size.m};
   font-weight: 400;
+
+  @media (min-width: 768px) {
+    font-size: ${({ theme }) => theme.font.size.l};
+  }
 `
 
 const SubTextSmall = styled.p`
   ${DefaultSubText};
   font-size: ${({ theme }) => theme.font.size.xs};
   margin-top: 0.5em;
+
+  @media (min-width: 768px) {
+    font-size: ${({ theme }) => theme.font.size.m};
+  }
 `
 
 const SubTextBig = styled.p`
@@ -92,12 +123,20 @@ const SubTextBig = styled.p`
   &:nth-of-type(1) ~ & {
     margin-top: 1em;
   }
+
+  @media (min-width: 768px) {
+    font-size: ${({ theme }) => theme.font.size.m};
+  }
 `
 
 const Text = styled.h4`
   font-size: ${({ theme }) => theme.font.size.m};
   font-weight: 400;
   margin-top: 0.5em;
+
+  @media (min-width: 768px) {
+    font-size: ${({ theme }) => theme.font.size.l};
+  }
 `
 
 const StyledListItem = styled.li`
@@ -109,10 +148,33 @@ const StyledListItem = styled.li`
   &:nth-of-type(1) ~ & {
     margin-top: 1em;
   }
+
+  @media (min-width: 768px) {
+    font-size: ${({ theme }) => theme.font.size.m};
+  }
 `
 
 const InnerCardList = styled(InnerCard)`
   max-width: 400px;
+
+  @media (min-width: 768px) {
+    max-width: 550px;
+  }
+`
+
+const StyledDateCardsWrapper = styled.div`
+  @media (min-width: 1024px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+`
+const StyledBasicInfo = styled(InnerCard)`
+  display: grid;
+  gap: 15px;
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
+  }
 `
 
 const populateArray = (length, input) => {
@@ -123,14 +185,11 @@ const populateArray = (length, input) => {
   return array
 }
 
-const ResultsPage = ({ location }) => {
+const ResultsPage = ({ institutions, physycian, city }) => {
   const [showPage, setShowPage] = useState([])
 
   useEffect(() => {
-    const populatedArray = populateArray(
-      location.state.institutions.length,
-      false
-    )
+    const populatedArray = populateArray(institutions.length, false)
     setShowPage(populatedArray)
   }, [])
 
@@ -144,10 +203,12 @@ const ResultsPage = ({ location }) => {
     setShowPage(tempShowPage)
   }
 
-  const tempArray = location.state.institutions
+  const tempArray = institutions
+
   const filteredInstitutions = tempArray.filter(
-    institution => institution.attributes.locality === location.state.city
+    institution => institution.attributes.locality === city
   )
+
   const sortedInstitutions = filteredInstitutions.sort((a, b) => {
     if (a.attributes.statistics && b.attributes.statistics) {
       return (
@@ -172,49 +233,52 @@ const ResultsPage = ({ location }) => {
           <BlueText>{institution.attributes.provider}</BlueText>
         </StyledH2>
         <StyledParagraph1>Przypadek stabilny</StyledParagraph1>
-        <InnerCard margin={"15px 0 0 0"}>
-          <StyledH4>Średni czas oczekiwania: </StyledH4>
-          <StyledH3>
-            <StyledDaysNum
-              time={
-                institution.attributes.statistics
+        <StyledDateCardsWrapper>
+          <InnerCard margin={"15px 0 0 0"}>
+            <StyledH4>Średni czas oczekiwania: </StyledH4>
+            <StyledH3>
+              <StyledDaysNum
+                time={
+                  institution.attributes.statistics
+                    ? institution.attributes.statistics["provider-data"][
+                        "average-period"
+                      ]
+                    : 999
+                }
+              >
+                {institution.attributes.statistics
                   ? institution.attributes.statistics["provider-data"][
                       "average-period"
                     ]
-                  : 999
-              }
-            >
-              {institution.attributes.statistics
-                ? institution.attributes.statistics["provider-data"][
-                    "average-period"
-                  ]
-                : "Brak danych"}
-            </StyledDaysNum>
-            <StyledDays>
-              {institution.attributes.statistics ? " dni" : null}
-            </StyledDays>
-          </StyledH3>
-          <SubTextSmall>
-            Status na miesiąc:
-            {institution.attributes.statistics
-              ? " " + institution.attributes.statistics["provider-data"].update
-              : " Brak danych"}
-          </SubTextSmall>
-        </InnerCard>
-        {institution.attributes.dates ? (
-          <InnerCard margin={"15px 0 0 0"}>
-            <StyledH4>Najbliższy termin: </StyledH4>
-            <StyledH3>
-              <StyledDaysNum time={dateDifference}>
-                {institution.attributes.dates.date}
+                  : "Brak danych"}
               </StyledDaysNum>
+              <StyledDays>
+                {institution.attributes.statistics ? " dni" : null}
+              </StyledDays>
             </StyledH3>
             <SubTextSmall>
-              Status na dzień:
-              {" " + institution.attributes.dates["date-situation-as-at"]}
+              Status na miesiąc:
+              {institution.attributes.statistics
+                ? " " +
+                  institution.attributes.statistics["provider-data"].update
+                : " Brak danych"}
             </SubTextSmall>
           </InnerCard>
-        ) : null}
+          {institution.attributes.dates ? (
+            <InnerCard margin={"15px 0 0 0"}>
+              <StyledH4>Najbliższy termin: </StyledH4>
+              <StyledH3>
+                <StyledDaysNum time={dateDifference}>
+                  {institution.attributes.dates.date}
+                </StyledDaysNum>
+              </StyledH3>
+              <SubTextSmall>
+                Status na dzień:
+                {" " + institution.attributes.dates["date-situation-as-at"]}
+              </SubTextSmall>
+            </InnerCard>
+          ) : null}
+        </StyledDateCardsWrapper>
         <InnerCard margin={"15px 0 0 0"}>
           <SubTextBig>Nazwa świadczenia określonego przez NFZ</SubTextBig>
           <Text>{institution.attributes.benefit}</Text>
@@ -223,14 +287,20 @@ const ResultsPage = ({ location }) => {
         </InnerCard>
         {showPage[index] ? (
           <>
-            <InnerCard margin={"15px 0 0 0"}>
-              <SubTextBig>Telefon</SubTextBig>
-              <Text>{institution.attributes.phone}</Text>
-              <SubTextBig>Miejscowość</SubTextBig>
-              <Text>{institution.attributes.locality}</Text>
-              <SubTextBig>Ulica</SubTextBig>
-              <Text>{institution.attributes.address}</Text>
-            </InnerCard>
+            <StyledBasicInfo margin={"15px 0 0 0"}>
+              <div>
+                <SubTextBig>Telefon</SubTextBig>
+                <Text>{institution.attributes.phone}</Text>
+              </div>
+              <div>
+                <SubTextBig>Miejscowość</SubTextBig>
+                <Text>{institution.attributes.locality}</Text>
+              </div>
+              <div>
+                <SubTextBig>Ulica</SubTextBig>
+                <Text>{institution.attributes.address}</Text>
+              </div>
+            </StyledBasicInfo>
             <InnerCardList margin={"15px 0 0 0"}>
               <ul>
                 <StyledListItem>
@@ -314,8 +384,8 @@ const ResultsPage = ({ location }) => {
         <BackgroundContainer />
         <InnerLayout>
           <StyledH1>
-            <BlueText>{location.state.physycian}, </BlueText>
-            {location.state.city}
+            <BlueText>{physycian}, </BlueText>
+            {city}
           </StyledH1>
           {results}
         </InnerLayout>
@@ -324,4 +394,11 @@ const ResultsPage = ({ location }) => {
   )
 }
 
-export default ResultsPage
+export default connect(
+  state => ({
+    institutions: state.app.institutions,
+    physycian: state.app.physycian,
+    city: state.app.city,
+  }),
+  null
+)(ResultsPage)

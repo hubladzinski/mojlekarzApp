@@ -11,8 +11,7 @@ const StyledInput = styled.input`
   background-color: ${({ theme }) => theme.colors.secondary};
   border-radius: 5px;
   padding: 0.65em;
-  font-size: ${({ size, theme }) =>
-    size === "big" ? theme.font.size.l : theme.font.size.s};
+  font-size: ${({ theme }) => theme.font.size.s};
   color: ${({ theme }) => theme.colors.primary};
   border: 2px solid ${({ theme }) => theme.colors.primary};
   width: 100%;
@@ -20,6 +19,10 @@ const StyledInput = styled.input`
   ::placeholder {
     color: ${({ theme }) => theme.colors.primary};
     opacity: 1;
+  }
+
+  @media (min-width: 768px) {
+    font-size: ${({ theme }) => theme.font.size.m};
   }
 `
 

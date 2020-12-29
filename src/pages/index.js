@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from "react"
 import { Link } from "gatsby"
+import { connect } from "react-redux"
+import { toggleInstitutions, togglePhysycian, toggleCity } from "../state/app"
 import MainLayout from "../layout/mainLayout"
 import InnerLayout from "../layout/innerLayout"
 import Card from "../components/card"
-import styled from "styled-components"
+import InnerCard from "../components/innerCard"
+import styled, { css } from "styled-components"
 import backgroundRotatedImg from "../assets/backgroundRotated.svg"
+import background from "../assets/background.svg"
 import BlueText from "../components/blueText"
 import Button from "../components/button"
 import Select from "../components/select"
 import DataList from "../components/dataList"
+import Loader from "../components/loader"
 
 const StyledWrapper = styled.div`
   flex: 1;
@@ -19,12 +24,70 @@ const StyledWrapper = styled.div`
   background-size: cover;
   background-position: top;
   background-image: url(${backgroundRotatedImg});
+
+  @media (min-width: 768px) {
+    background-image: url(${background});
+  }
+`
+
+const StyledInnerLayout = styled(InnerLayout)`
+  @media (min-width: 768px) {
+    display: flex;
+    align-items: flex-start;
+  }
+`
+
+const StyledCardUpper = styled(Card)`
+  margin: 6em 0 0 0;
+  padding: 1.5em;
+
+  @media (min-width: 768px) {
+    margin: 0 50px 0 0;
+    padding: 4em 0;
+  }
+`
+
+const StyledCardLower = styled(Card)`
+  margin-top: 25px;
+
+  @media (min-width: 768px) {
+    margin: 0;
+  }
 `
 
 const StyledH2 = styled.h2`
   font-size: ${({ theme }) => theme.font.size.m};
   font-weight: 400;
   text-align: center;
+
+  @media (min-width: 768px) {
+    font-size: ${({ theme }) => theme.font.size.xl};
+  }
+`
+
+const BaseMessage = css`
+  font-size: ${({ theme }) => theme.font.size.s};
+  font-weight: 400;
+`
+
+const StyledErrorMessage = styled.p`
+  ${BaseMessage}
+  color: ${({ theme }) => theme.colors.timeBad};
+`
+
+const StyledInfoMessage = styled.p`
+  ${BaseMessage}
+  color: ${({ theme }) => theme.colors.primary};
+`
+
+const StyledLoader = styled(Loader)`
+  display: block;
+`
+const StyledInnerCard = styled(InnerCard)`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 `
 
 const physicianTypes = [
@@ -104,13 +167,17 @@ const updateCities = response => {
   return array
 }
 
-const IndexPage = () => {
+const IndexPage = ({ dispatch }) => {
+  const [fetchingData, setFetchingData] = useState(false)
   const [isCitiesDataFetched, setIsCitiesDataFetched] = useState(false)
   const [selectedPhysician, setSelectedPhysician] = useState({
-    nam: "",
+    name: "",
     code: "",
   })
-  const [selectedVoievodeship, setSelectedVoievodeship] = useState("")
+  const [selectedVoievodeship, setSelectedVoievodeship] = useState({
+    name: "",
+    code: "",
+  })
   const [selectedCity, setSelectedCity] = useState("")
   const [cities, setCities] = useState([])
   const [institutionsInVoievodeship, setInstitutionsInVoievodeship] = useState(
@@ -126,7 +193,11 @@ const IndexPage = () => {
   }
 
   const updateVoievodeship = e => {
-    setSelectedVoievodeship(e.target.value)
+    let index = e.nativeEvent.target.selectedIndex
+    setSelectedVoievodeship({
+      name: e.nativeEvent.target[index].text,
+      code: e.target.value,
+    })
   }
 
   const updateCity = e => {
@@ -134,33 +205,46 @@ const IndexPage = () => {
   }
 
   const fetchCities = async (benefit, province) => {
-    console.log("--------------proceeding------------")
+    setFetchingData(true)
     let response = await getNFZData(
       `https://api.nfz.gov.pl/app-itl-api/queues?limit=25&format=json&case=1&benefit=${benefit}&province=${province}`
     )
-    console.log(response)
-    let citiesArray = updateCities(response)
     setInstitutionsInVoievodeship(response)
-    setCities(citiesArray)
+    setCities(updateCities(response))
     setIsCitiesDataFetched(true)
+    setFetchingData(false)
   }
 
   useEffect(() => {
-    if (selectedPhysician.name !== "" && selectedVoievodeship !== "")
-      fetchCities(selectedPhysician.code, selectedVoievodeship)
+    if (selectedPhysician.name !== "" && selectedVoievodeship.name !== "")
+      fetchCities(selectedPhysician.code, selectedVoievodeship.code)
   }, [selectedPhysician, selectedVoievodeship])
+
+  //Update state of institutions, physycian and city in redux
+
+  useEffect(() => {
+    dispatch(toggleInstitutions(institutionsInVoievodeship))
+  }, [institutionsInVoievodeship])
+
+  useEffect(() => {
+    dispatch(togglePhysycian(selectedPhysician.name))
+  }, [selectedPhysician])
+
+  useEffect(() => {
+    dispatch(toggleCity(selectedCity))
+  }, [selectedCity])
 
   return (
     <MainLayout>
       <StyledWrapper>
-        <InnerLayout>
-          <Card margin={"6em 0 0 0"} padding={"1.5em"}>
+        <StyledInnerLayout>
+          <StyledCardUpper>
             <StyledH2>
               <BlueText>Znajdź </BlueText>ośrodki, <BlueText>blisko </BlueText>
               Ciebie, świadczące usługi na <BlueText>NFZ</BlueText>
             </StyledH2>
-          </Card>
-          <Card margin={"25px 0 0 0"}>
+          </StyledCardUpper>
+          <StyledCardLower>
             <Select
               text={"Wybierz lekarza:"}
               options={physicianTypes}
@@ -172,31 +256,60 @@ const IndexPage = () => {
               margin={"15px 0 0 0"}
               handleChange={updateVoievodeship}
             />
-            {isCitiesDataFetched && (
-              <DataList
-                text={"Wpisz miasto:"}
-                options={cities}
-                margin={"15px 0 0 0"}
-                name={"cities"}
-                handleChange={updateCity}
-                placeholder={"Wpisz lub wybierz miasto"}
-              />
+            {fetchingData && (
+              <StyledInnerCard margin={"15px 0 0 0"}>
+                <StyledInfoMessage>Pobieranie listy miast...</StyledInfoMessage>
+                <StyledLoader margin={"15px 0 0 0"} />
+              </StyledInnerCard>
             )}
-            <Link
-              to="/results"
-              state={{
-                institutions: institutionsInVoievodeship,
-                physycian: selectedPhysician.name,
-                city: selectedCity,
-              }}
-            >
-              <Button text={"Szukaj"} margin={"15px 0 0 0"} />
+            {cities.length > 0
+              ? fetchingData === false && (
+                  <DataList
+                    text={"Wpisz miasto:"}
+                    margin={"15px 0 0 0"}
+                    options={cities}
+                    name={"cities"}
+                    handleChange={updateCity}
+                    placeholder={"Wpisz lub wybierz miasto"}
+                  />
+                )
+              : isCitiesDataFetched &&
+                fetchingData === false && (
+                  <InnerCard margin={"15px 0 0 0"}>
+                    <StyledErrorMessage>
+                      Nie znaleziono placówek ze specjalnością:{" "}
+                      {selectedPhysician.name} dla województwa:{" "}
+                      {selectedVoievodeship.name}
+                    </StyledErrorMessage>
+                  </InnerCard>
+                )}
+            <Link to="/results">
+              {cities.length > 0 &&
+              fetchingData === false &&
+              isCitiesDataFetched &&
+              selectedCity !== "" ? (
+                <Button text={"Szukaj"} margin={"15px 0 0 0"} />
+              ) : (
+                <Button
+                  text={"Szukaj"}
+                  margin={"15px 0 0 0"}
+                  disabled
+                  backgroundColor={"gray"}
+                />
+              )}
             </Link>
-          </Card>
-        </InnerLayout>
+          </StyledCardLower>
+        </StyledInnerLayout>
       </StyledWrapper>
     </MainLayout>
   )
 }
 
-export default IndexPage
+export default connect(
+  state => ({
+    institutions: state.app.institutions,
+    physycian: state.app.physycian,
+    city: state.app.city,
+  }),
+  null
+)(IndexPage)

@@ -21,6 +21,10 @@ const StyledH1 = styled.h1`
     color: ${({ theme }) => theme.colors.primary};
     font-weight: 400;
   }
+
+  @media (min-width: 768px) {
+    font-size: ${({ theme }) => theme.font.size.xl};
+  }
 `
 
 const StyledLink = styled(Link)`
