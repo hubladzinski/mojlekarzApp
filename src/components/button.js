@@ -14,10 +14,6 @@ const StyledButton = styled.button`
   cursor: pointer;
   ${space};
   ${color};
-
-  @media (min-width: 768px) {
-    font-size: ${({ theme }) => theme.font.size.l};
-  }
 `
 
 const Button = ({ text, className, margin, padding, ...props }) => {
