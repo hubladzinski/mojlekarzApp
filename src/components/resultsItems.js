@@ -17,27 +17,6 @@ const DefaultHeader = css`
   font-weight: 600;
 `
 
-const StyledH1 = styled.h1`
-  ${DefaultHeader};
-  font-size: ${({ theme }) => theme.font.size.m};
-  margin-top: 2em;
-
-  div:last-of-type {
-    font-weight: 400;
-    margin-top: 10px;
-  }
-
-  @media (min-width: 768px) {
-    display: flex;
-    justify-content: space-between;
-    font-size: ${({ theme }) => theme.font.size.l};
-
-    div:last-of-type {
-      margin-top: 0;
-    }
-  }
-`
-
 const StyledH2 = styled.h2`
   ${DefaultHeader};
   font-size: ${({ theme }) => theme.font.size.s};
@@ -168,13 +147,6 @@ const ResultsItems = ({
 
   return (
     <div className={className} {...props}>
-      <StyledH1>
-        <div>
-          <BlueText>{physycian}, </BlueText>
-          {city}
-        </div>
-        <div>Wyniki: {totalResults}</div>
-      </StyledH1>
       {results.map((institution, index) => {
         let dateDifference = 999
         if (institution.attributes.dates) {

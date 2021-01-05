@@ -286,8 +286,7 @@ const IndexPage = ({ dispatch }) => {
             <Link to="/results">
               {cities.length > 0 &&
               fetchingData === false &&
-              isCitiesDataFetched &&
-              selectedCity !== "" ? (
+              isCitiesDataFetched ? (
                 <Button text={"Szukaj"} margin={"15px 0 0 0"} />
               ) : (
                 <Button

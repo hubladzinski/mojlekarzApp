@@ -17,6 +17,20 @@ const StyledSelect = styled.select`
   }
 `
 
+const StyledLabelWrapper = styled.div`
+  max-width: 350px;
+  ${space};
+  select {
+    font-size: ${({ theme }) => theme.font.size.xs};
+    margin-top: 5px;
+    color: black;
+    border: 2px solid ${({ theme }) => theme.colors.primary};
+  }
+  label {
+    font-size: ${({ theme }) => theme.font.size.xs};
+  }
+`
+
 const Select = ({
   text,
   handleChange,
@@ -24,6 +38,8 @@ const Select = ({
   options,
   margin,
   padding,
+  label,
+  labelText,
 }) => {
   const selectOptions = options.map((option, index) => (
     <option value={option.code} key={index}>
@@ -31,18 +47,34 @@ const Select = ({
     </option>
   ))
   return (
-    <StyledSelect
-      onChange={e => handleChange(e)}
-      className={className}
-      margin={margin}
-      padding={padding}
-      defaultValue={text}
-    >
-      <option value={text} disabled>
-        {text}
-      </option>
-      {selectOptions}
-    </StyledSelect>
+    <>
+      {!label ? (
+        <StyledSelect
+          onChange={e => handleChange(e)}
+          className={className}
+          margin={margin}
+          padding={padding}
+          defaultValue={text}
+        >
+          <option value={text} disabled>
+            {text}
+          </option>
+          {selectOptions}
+        </StyledSelect>
+      ) : (
+        <StyledLabelWrapper margin={margin} padding={padding}>
+          <label htmlFor={label}>{labelText}</label>
+          <StyledSelect
+            onChange={e => handleChange(e)}
+            className={className}
+            defaultValue={text}
+            id={label}
+          >
+            {selectOptions}
+          </StyledSelect>
+        </StyledLabelWrapper>
+      )}
+    </>
   )
 }
 
