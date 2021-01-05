@@ -86,7 +86,7 @@ const sortByAvgTime = (institutions, order) => {
 const sortByDate = (institutions, order) => {
   if (order === "min") {
     return institutions.sort((a, b) => {
-      if (a.attributes.dates.date && b.attributes.dates.date) {
+      if (a.attributes.dates && b.attributes.dates) {
         return (
           new Date(a.attributes.dates.date).getTime() -
           new Date(b.attributes.dates.date).getTime()
@@ -96,7 +96,7 @@ const sortByDate = (institutions, order) => {
   }
   if (order === "max") {
     return institutions.sort((a, b) => {
-      if (a.attributes.dates.date && b.attributes.dates.date) {
+      if (a.attributes.dates && b.attributes.dates) {
         return (
           new Date(b.attributes.dates.date).getTime() -
           new Date(a.attributes.dates.date).getTime()

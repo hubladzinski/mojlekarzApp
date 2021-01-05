@@ -112,37 +112,23 @@ const StyledBasicInfo = styled(InnerCard)`
   }
 `
 
-const populateArray = (length, input) => {
-  let array = []
-  for (let i = 0; i < length; i++) {
-    array[i] = input
-  }
-  return array
-}
-
-const ResultsItems = ({
-  className,
-  results,
-  physycian,
-  city,
-  totalResults,
-  ...props
-}) => {
-  const [showPage, setShowPage] = useState([])
+const ResultsItems = ({ className, results, ...props }) => {
+  const [showPage, setShowPage] = useState()
 
   useEffect(() => {
-    const populatedArray = populateArray(results.length, false)
-    setShowPage(populatedArray)
-  }, [])
+    setShowPage(results.map(() => false))
+  }, [results])
 
   const showMoreInfo = index => {
-    const tempShowPage = showPage.map((item, innerIndex) => {
-      if (innerIndex === index) {
-        return (item = !item)
-      }
-      return item
-    })
-    setShowPage(tempShowPage)
+    setShowPage(prevShowPage =>
+      prevShowPage.map((item, innerIndex) => {
+        console.log(prevShowPage)
+        if (innerIndex === index) {
+          return (item = !item)
+        }
+        return item
+      })
+    )
   }
 
   return (
@@ -230,74 +216,72 @@ const ResultsItems = ({
               <Text>{institution.attributes.place}</Text>
             </InnerCard>
             {showPage[index] ? (
-              <>
-                <InnerCardList margin={"15px 0 0 0"}>
-                  <ul>
-                    <StyledListItem>
-                      <p style={{ marginRight: "15px" }}>
-                        Łazienka dla niepełnosprawnych:
-                      </p>
-                      {institution.attributes.toilet ? (
-                        <FontAwesomeIcon
-                          icon={faCheckSquare}
-                          color={"#0DA013"}
-                          size={"2x"}
-                        />
-                      ) : null}
-                    </StyledListItem>
-                    <StyledListItem>
-                      <p style={{ marginRight: "15px" }}>
-                        Podjazd dla niepełnosprawnych:
-                      </p>
-                      {institution.attributes.ramp === "Y" ? (
-                        <FontAwesomeIcon
-                          icon={faCheckSquare}
-                          color={"#0DA013"}
-                          size={"2x"}
-                        />
-                      ) : (
-                        <FontAwesomeIcon
-                          icon={faTimesCircle}
-                          color={"#E23636"}
-                          size={"2x"}
-                        />
-                      )}
-                    </StyledListItem>
-                    <StyledListItem>
-                      <p style={{ marginRight: "15px" }}>Parking:</p>
-                      {institution.attributes["car-park"] === "Y" ? (
-                        <FontAwesomeIcon
-                          icon={faCheckSquare}
-                          color={"#0DA013"}
-                          size={"2x"}
-                        />
-                      ) : (
-                        <FontAwesomeIcon
-                          icon={faTimesCircle}
-                          color={"#E23636"}
-                          size={"2x"}
-                        />
-                      )}
-                    </StyledListItem>
-                    <StyledListItem>
-                      <p style={{ marginRight: "15px" }}>Winda:</p>
-                      {institution.attributes.elevator === "Y" ? (
-                        <FontAwesomeIcon
-                          icon={faCheckSquare}
-                          color={"#0DA013"}
-                          size={"2x"}
-                        />
-                      ) : (
-                        <FontAwesomeIcon
-                          icon={faTimesCircle}
-                          color={"#E23636"}
-                          size={"2x"}
-                        />
-                      )}
-                    </StyledListItem>
-                  </ul>
-                </InnerCardList>
-              </>
+              <InnerCardList margin={"15px 0 0 0"}>
+                <ul>
+                  <StyledListItem>
+                    <p style={{ marginRight: "15px" }}>
+                      Łazienka dla niepełnosprawnych:
+                    </p>
+                    {institution.attributes.toilet ? (
+                      <FontAwesomeIcon
+                        icon={faCheckSquare}
+                        color={"#0DA013"}
+                        size={"2x"}
+                      />
+                    ) : null}
+                  </StyledListItem>
+                  <StyledListItem>
+                    <p style={{ marginRight: "15px" }}>
+                      Podjazd dla niepełnosprawnych:
+                    </p>
+                    {institution.attributes.ramp === "Y" ? (
+                      <FontAwesomeIcon
+                        icon={faCheckSquare}
+                        color={"#0DA013"}
+                        size={"2x"}
+                      />
+                    ) : (
+                      <FontAwesomeIcon
+                        icon={faTimesCircle}
+                        color={"#E23636"}
+                        size={"2x"}
+                      />
+                    )}
+                  </StyledListItem>
+                  <StyledListItem>
+                    <p style={{ marginRight: "15px" }}>Parking:</p>
+                    {institution.attributes["car-park"] === "Y" ? (
+                      <FontAwesomeIcon
+                        icon={faCheckSquare}
+                        color={"#0DA013"}
+                        size={"2x"}
+                      />
+                    ) : (
+                      <FontAwesomeIcon
+                        icon={faTimesCircle}
+                        color={"#E23636"}
+                        size={"2x"}
+                      />
+                    )}
+                  </StyledListItem>
+                  <StyledListItem>
+                    <p style={{ marginRight: "15px" }}>Winda:</p>
+                    {institution.attributes.elevator === "Y" ? (
+                      <FontAwesomeIcon
+                        icon={faCheckSquare}
+                        color={"#0DA013"}
+                        size={"2x"}
+                      />
+                    ) : (
+                      <FontAwesomeIcon
+                        icon={faTimesCircle}
+                        color={"#E23636"}
+                        size={"2x"}
+                      />
+                    )}
+                  </StyledListItem>
+                </ul>
+              </InnerCardList>
             ) : null}
             <Button
               text={showPage[index] ? "Schowaj" : "Dodatkowe informacje"}
