@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react"
 import { Link } from "gatsby"
 import { connect } from "react-redux"
-import { toggleInstitutions, togglePhysycian, toggleCity } from "../state/app"
+import {
+  toggleInstitutions,
+  togglePhysycian,
+  toggleCity,
+  toggleVoievodeship,
+} from "../state/app"
 import MainLayout from "../layout/mainLayout"
 import InnerLayout from "../layout/innerLayout"
 import Card from "../components/card"
@@ -234,6 +239,10 @@ const IndexPage = ({ dispatch }) => {
     dispatch(toggleCity(selectedCity))
   }, [selectedCity])
 
+  useEffect(() => {
+    dispatch(toggleVoievodeship(selectedVoievodeship.name))
+  }, [selectedVoievodeship])
+
   return (
     <MainLayout>
       <StyledWrapper>
@@ -309,6 +318,7 @@ export default connect(
     institutions: state.app.institutions,
     physycian: state.app.physycian,
     city: state.app.city,
+    voievodeship: state.app.voievodeship,
   }),
   null
 )(IndexPage)

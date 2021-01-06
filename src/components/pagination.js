@@ -29,7 +29,7 @@ const StyledPagination = styled.nav`
     }
   }
 
-  a {
+  button {
     font-size: ${({ theme }) => theme.font.size.s};
     padding: 10px 20px;
     cursor: pointer;
@@ -63,7 +63,7 @@ const Pagination = ({
       <ul>
         {currentPage > 1 && (
           <li>
-            <a onClick={() => paginate(currentPage - 1)}>{"<"}</a>
+            <button onClick={() => paginate(currentPage - 1)}>{"<"}</button>
           </li>
         )}
         {resultsNumbers.map(number => (
@@ -79,7 +79,7 @@ const Pagination = ({
         ))}
         {currentPage < numberOfPages && (
           <li>
-            <a onClick={() => paginate(currentPage + 1)}>{">"}</a>
+            <button onClick={() => paginate(currentPage + 1)}>{">"}</button>
           </li>
         )}
       </ul>

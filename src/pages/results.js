@@ -106,47 +106,60 @@ const sortByDate = (institutions, order) => {
   }
 }
 
-const ResultsPage = ({ institutions, physycian, city }) => {
-  const [sortedInstitutions, setSortedInstitutions] = useState([])
+const filterByCity = (institutions, city) =>
+  institutions.filter(institution => institution.attributes.locality === city)
+
+const ResultsPage = ({ institutions, physycian, city, voievodeship }) => {
+  const [sortedInstitutions, setSortedInstitutions] = useState(() => {
+    if (city !== "") {
+      const filteredInstitutions = filterByCity(institutions, city)
+      return filteredInstitutions
+    } else {
+      return institutions
+    }
+  })
   const [currentPage, setCurrentPage] = useState(1)
   const [resultsPerPage, setResultsPerPage] = useState(5)
-
-  const filteredInstitutions = institutions.filter(
-    institution => institution.attributes.locality === city
-  )
+  const [sortOrder, setSortOrder] = useState("avgTimeMin")
+  const [currentResults, setCurrentResults] = useState([])
+  const [place, setPlace] = useState(() => {
+    if (city !== "") {
+      return city
+    } else {
+      return voievodeship
+    }
+  })
 
   useEffect(() => {
-    if (city !== "") {
-      setSortedInstitutions(sortByAvgTime(filteredInstitutions, "min"))
-    } else {
-      setSortedInstitutions(sortByAvgTime(institutions, "min"))
-    }
-  }, [])
+    const indexOfLastResult = currentPage * resultsPerPage
+    const indexOfFirstResult = indexOfLastResult - resultsPerPage
+    setCurrentResults(
+      sortedInstitutions.slice(indexOfFirstResult, indexOfLastResult)
+    )
+  }, [currentPage, resultsPerPage, sortedInstitutions])
 
-  const sort = e => {
-    console.log(e.target.value)
-    switch (e.target.value) {
+  useEffect(() => {
+    switch (sortOrder) {
       case "avgTimeMin":
-        setSortedInstitutions(sortByAvgTime(filteredInstitutions, "min"))
+        setSortedInstitutions(sortByAvgTime([...sortedInstitutions], "min"))
         break
       case "avgTimeMax":
-        setSortedInstitutions(sortByAvgTime(filteredInstitutions, "max"))
+        setSortedInstitutions(sortByAvgTime([...sortedInstitutions], "max"))
         break
       case "dateMin":
-        setSortedInstitutions(sortByDate(filteredInstitutions, "min"))
+        setSortedInstitutions(sortByDate([...sortedInstitutions], "min"))
         break
       case "dateMax":
-        setSortedInstitutions(sortByDate(filteredInstitutions, "max"))
+        setSortedInstitutions(sortByDate([...sortedInstitutions], "max"))
+        break
+      default:
         break
     }
-  }
+  }, [sortOrder])
 
-  const indexOfLastResult = currentPage * resultsPerPage
-  const indexOfFirstResult = indexOfLastResult - resultsPerPage
-  const currentResults = sortedInstitutions.slice(
-    indexOfFirstResult,
-    indexOfLastResult
-  )
+  const changeSort = e => {
+    setSortOrder(e.target.value)
+  }
 
   const paginate = pageNumber => {
     setCurrentPage(pageNumber)
@@ -161,14 +174,14 @@ const ResultsPage = ({ institutions, physycian, city }) => {
           <StyledH1>
             <div>
               <BlueText>{physycian}, </BlueText>
-              {city}
+              {place}
             </div>
             <div>Wyniki: {sortedInstitutions.length}</div>
           </StyledH1>
           <Select
             text={sortOptions[0].name}
             options={sortOptions}
-            handleChange={sort}
+            handleChange={changeSort}
             label={"sort"}
             margin={"10px 0 0 0"}
             labelText={"Sortowanie"}
@@ -191,6 +204,7 @@ export default connect(
     institutions: state.app.institutions,
     physycian: state.app.physycian,
     city: state.app.city,
+    voievodeship: state.app.voievodeship,
   }),
   null
 )(ResultsPage)
