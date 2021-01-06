@@ -2,9 +2,9 @@ import React from "react"
 import styled, { createGlobalStyle, ThemeProvider } from "styled-components"
 import theme from "../utils/theme"
 import Header from "../components/header"
+import SEO from "../components/seo"
 
 const GlobalStyle = createGlobalStyle`
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
 
 *, *::before, *::after {
     box-sizing: border-box;
@@ -43,6 +43,7 @@ const MainLayout = ({ children }) => {
       <GlobalStyle />
       <ThemeProvider theme={theme}>
         <StyledLayout>
+          <SEO />
           <Header />
           {children}
         </StyledLayout>
