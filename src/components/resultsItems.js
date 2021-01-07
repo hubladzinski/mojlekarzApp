@@ -13,12 +13,8 @@ const DefaultSubText = css`
   font-weight: 400;
 `
 
-const DefaultHeader = css`
-  font-weight: 600;
-`
-
 const StyledH2 = styled.h2`
-  ${DefaultHeader};
+  font-weight: 500;
   font-size: ${({ theme }) => theme.font.size.s};
 
   @media (min-width: 768px) {
@@ -122,7 +118,6 @@ const ResultsItems = ({ className, results, ...props }) => {
   const showMoreInfo = index => {
     setShowPage(prevShowPage =>
       prevShowPage.map((item, innerIndex) => {
-        console.log(prevShowPage)
         if (innerIndex === index) {
           return (item = !item)
         }

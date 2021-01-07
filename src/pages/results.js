@@ -69,6 +69,8 @@ const sortByAvgTime = (institutions, order) => {
           b.attributes.statistics["provider-data"]["average-period"]
         )
       }
+      if (a.attributes.statistics && !b.attributes.statistics) return -1
+      if (!a.attributes.statistics && b.attributes.statistics) return 1
     })
   }
   if (order === "max") {
@@ -92,6 +94,8 @@ const sortByDate = (institutions, order) => {
           new Date(b.attributes.dates.date).getTime()
         )
       }
+      if (a.attributes.dates && !b.attributes.dates) return -1
+      if (!a.attributes.dates && b.attributes.dates) return 1
     })
   }
   if (order === "max") {

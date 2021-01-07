@@ -95,6 +95,12 @@ const StyledInnerCard = styled(InnerCard)`
   align-items: center;
 `
 
+const StyledValidationNote = styled.div`
+  margin-top: 5px;
+  font-size: ${({ theme }) => theme.font.size.xs};
+  color: ${({ theme }) => theme.colors.primary};
+`
+
 const physicianTypes = [
   { name: "Alergologia", code: "alergolog" },
   { name: "Anestezjologia", code: "anestezjolog" },
@@ -163,7 +169,7 @@ async function getNFZData(url) {
 }
 
 const updateCities = response => {
-  let array = []
+  let array = [""]
   response.forEach(item => {
     if (!array.includes(item.attributes.locality))
       array.push(item.attributes.locality)
@@ -175,6 +181,8 @@ const updateCities = response => {
 const IndexPage = ({ dispatch }) => {
   const [fetchingData, setFetchingData] = useState(false)
   const [isCitiesDataFetched, setIsCitiesDataFetched] = useState(false)
+  const [rightCitySelected, setRightCitySelected] = useState(false)
+  const [showValidationError, setShowValidationError] = useState(false)
   const [selectedPhysician, setSelectedPhysician] = useState({
     name: "",
     code: "",
@@ -224,6 +232,17 @@ const IndexPage = ({ dispatch }) => {
     if (selectedPhysician.name !== "" && selectedVoievodeship.name !== "")
       fetchCities(selectedPhysician.code, selectedVoievodeship.code)
   }, [selectedPhysician, selectedVoievodeship])
+
+  useEffect(() => {
+    const isThisCityIncludedInList = cities.includes(selectedCity)
+    if (isThisCityIncludedInList) {
+      setRightCitySelected(true)
+      setShowValidationError(false)
+    } else {
+      setRightCitySelected(false)
+      setShowValidationError(true)
+    }
+  }, [selectedCity, cities])
 
   //Update state of institutions, physycian and city in redux
 
@@ -292,10 +311,17 @@ const IndexPage = ({ dispatch }) => {
                     </StyledErrorMessage>
                   </InnerCard>
                 )}
+            {isCitiesDataFetched && (
+              <StyledValidationNote>
+                Wybierz miasto z listy, lub pozostaw pole puste by szukać w
+                całym województwie
+              </StyledValidationNote>
+            )}
             <Link to="/results">
               {cities.length > 0 &&
               fetchingData === false &&
-              isCitiesDataFetched ? (
+              isCitiesDataFetched &&
+              rightCitySelected ? (
                 <Button text={"Szukaj"} margin={"15px 0 0 0"} />
               ) : (
                 <Button

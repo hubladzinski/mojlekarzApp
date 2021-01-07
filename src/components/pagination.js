@@ -33,14 +33,18 @@ const StyledPagination = styled.nav`
     font-size: ${({ theme }) => theme.font.size.s};
     padding: 10px 20px;
     cursor: pointer;
+    border: none;
+    background: none;
   }
 `
 
-const StyledLink = styled.a`
+const StyledLink = styled.button`
   color: ${({ number, currentPage }) =>
     number === currentPage ? ({ theme }) => theme.colors.primary : "#000"};
   font-weight: ${({ number, currentPage }) =>
     number === currentPage ? 600 : 300};
+  border: none;
+  background: none;
 `
 
 const Pagination = ({
