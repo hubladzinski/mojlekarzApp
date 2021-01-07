@@ -28,6 +28,17 @@ const SEO = () => {
         href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
         rel="stylesheet"
       />
+      <script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-G70199GS97"
+      ></script>
+      <script type="application/ld+json">
+        {`
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('config', 'G-G70199GS97');
+  `}
+      </script>
       <link rel="canonical" href={url} />
       <meta name="description" content={description} />
       <meta name="image" content={logoImg} />
