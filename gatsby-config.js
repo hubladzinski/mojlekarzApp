@@ -6,6 +6,13 @@ module.exports = {
     author: `@hublad`,
   },
   plugins: [
+    {
+      resolve: `gatsby-plugin-google-analytics`,
+      options: {
+        trackingId: "G-G70199GS97",
+        head: false,
+      },
+    },
     `gatsby-plugin-react-helmet`,
     {
       resolve: `gatsby-source-filesystem`,
@@ -32,11 +39,5 @@ module.exports = {
       resolve: `gatsby-plugin-styled-components`,
     },
     `gatsby-plugin-fontawesome-css`,
-    {
-      resolve: `gatsby-plugin-google-analytics`,
-      options: {
-        trackingId: "G-G70199GS97",
-      },
-    },
   ],
 }
