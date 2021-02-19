@@ -1,7 +1,7 @@
 import React from "react"
 import styled from "styled-components"
 import { Link } from "gatsby"
-import Button from "../components/Button"
+import Button from "./Button"
 
 const StyledWrapper = styled.nav`
   background-color: transparent;
