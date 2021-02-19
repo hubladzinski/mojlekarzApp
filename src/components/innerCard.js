@@ -6,7 +6,7 @@ const StyledInnerCard = styled.div`
   background-color: ${({ theme }) => theme.colors.secondary};
   border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 5px;
-  padding: 2em;
+  padding: 20px;
   font-family: ${({ theme }) => theme.font.family.primary};
   ${space};
 `

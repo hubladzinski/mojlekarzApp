@@ -3,7 +3,7 @@ import styled from "styled-components"
 
 const StyledLayout = styled.div`
   max-width: 1350px;
-  padding: 0 20px 20px 20px;
+  padding: 100px 20px 20px 20px;
   width: 100%;
 `
 

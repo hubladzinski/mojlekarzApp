@@ -3,6 +3,7 @@ const theme = {
     primary: "#0254A0",
     secondary: "#FFF",
     subText: "#6C6C6CCC",
+    timeVeryGood: "#11D017",
     timeGood: "#0DA013",
     timeOK: "#EDB95E",
     timeBad: "#E23636",
