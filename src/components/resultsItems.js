@@ -1,40 +1,40 @@
 import React, { useState, useEffect } from "react"
-import styled, { css } from "styled-components"
+import styled from "styled-components"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCheckSquare } from "@fortawesome/free-solid-svg-icons"
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons"
-import InnerCard from "./innerCard"
-import BlueText from "./blueText"
-import Card from "./card"
-import Button from "./button"
+import InnerCard from "./InnerCard"
+import BlueText from "./BlueText"
+import Card from "./Card"
+import Button from "./Button"
+import { Heading3 } from "../components/Heading"
+import SubParagraph from "../components/SubParagraph"
+import { Paragraph2, Paragraph3 } from "../components/Paragraph"
 
-const DefaultSubText = css`
-  color: ${({ theme }) => theme.colors.subText};
+const DateWrapper = styled.h3`
+  margin-top: 5px;
+`
+
+const StyledHeading3 = styled(Heading3)`
   font-weight: 400;
 `
 
-const StyledH2 = styled.h2`
-  font-weight: 500;
-  font-size: ${({ theme }) => theme.font.size.s};
+const StyledParagraph2 = styled(Paragraph2)`
+  margin-top: 20px;
+`
 
-  @media (min-width: 768px) {
-    font-size: ${({ theme }) => theme.font.size.m};
+const StyledParagraph3 = styled(Paragraph3)`
+  margin-top: 15px;
+`
+
+const StyledSubParagraph1 = styled(SubParagraph)`
+  &:nth-of-type(1) ~ & {
+    margin-top: 20px;
   }
 `
 
-const StyledH3 = styled.h3`
-  margin-top: 0.5em;
-`
-
-const StyledH4 = styled.h4`
-  font-size: ${({ theme }) => theme.font.size.s};
-  font-weight: 400;
-`
-
-const StyledParagraph1 = styled.p`
-  font-size: ${({ theme }) => theme.font.size.s};
-  font-weight: 400;
-  margin-top: 1em;
+const StyledSubParagraph2 = styled(SubParagraph)`
+  margin-top: 10px;
 `
 
 const StyledDaysNum = styled.span`
@@ -54,26 +54,6 @@ const StyledDays = styled.span`
   font-weight: 400;
 `
 
-const SubTextSmall = styled.p`
-  ${DefaultSubText};
-  font-size: ${({ theme }) => theme.font.size.xs};
-  margin-top: 0.5em;
-`
-
-const SubTextBig = styled.p`
-  ${DefaultSubText};
-  font-size: ${({ theme }) => theme.font.size.s};
-  &:nth-of-type(1) ~ & {
-    margin-top: 1em;
-  }
-`
-
-const Text = styled.h4`
-  font-size: ${({ theme }) => theme.font.size.m};
-  font-weight: 400;
-  margin-top: 0.5em;
-`
-
 const StyledListItem = styled.li`
   display: flex;
   align-items: center;
@@ -81,7 +61,7 @@ const StyledListItem = styled.li`
   font-size: ${({ theme }) => theme.font.size.s};
   font-weight: 400;
   &:nth-of-type(1) ~ & {
-    margin-top: 1em;
+    margin-top: 10px;
   }
 `
 
@@ -139,14 +119,16 @@ const ResultsItems = ({ className, results, ...props }) => {
         }
         return (
           <Card margin={"2em 0 0 0"} key={index}>
-            <StyledH2>
+            <Heading3 responsive as="h2">
               <BlueText>{institution.attributes.provider}</BlueText>
-            </StyledH2>
-            <StyledParagraph1>Przypadek stabilny</StyledParagraph1>
+            </Heading3>
+            <StyledParagraph2>Przypadek stabilny</StyledParagraph2>
             <StyledDateCardsWrapper>
               <InnerCard margin={"15px 0 0 0"}>
-                <StyledH4>Średni czas oczekiwania: </StyledH4>
-                <StyledH3>
+                <StyledHeading3 as="h4">
+                  Średni czas oczekiwania:
+                </StyledHeading3>
+                <DateWrapper>
                   <StyledDaysNum
                     time={
                       institution.attributes.statistics
@@ -165,50 +147,69 @@ const ResultsItems = ({ className, results, ...props }) => {
                   <StyledDays>
                     {institution.attributes.statistics ? " dni" : null}
                   </StyledDays>
-                </StyledH3>
-                <SubTextSmall>
+                </DateWrapper>
+                <StyledSubParagraph2 small>
                   Status na miesiąc:
                   {institution.attributes.statistics
                     ? " " +
                       institution.attributes.statistics["provider-data"].update
                     : " Brak danych"}
-                </SubTextSmall>
+                </StyledSubParagraph2>
               </InnerCard>
-              {institution.attributes.dates ? (
-                <InnerCard margin={"15px 0 0 0"}>
-                  <StyledH4>Najbliższy termin: </StyledH4>
-                  <StyledH3>
-                    <StyledDaysNum time={dateDifference}>
-                      {institution.attributes.dates.date}
-                    </StyledDaysNum>
-                  </StyledH3>
-                  <SubTextSmall>
-                    Status na dzień:
-                    {" " + institution.attributes.dates["date-situation-as-at"]}
-                  </SubTextSmall>
-                </InnerCard>
-              ) : null}
+              <InnerCard margin={"15px 0 0 0"}>
+                <StyledHeading3 as="h4">Najbliższy termin: </StyledHeading3>
+                <DateWrapper>
+                  <StyledDaysNum
+                    time={
+                      institution.attributes.dates ? dateDifference : 999999999
+                    }
+                  >
+                    {institution.attributes.dates
+                      ? institution.attributes.dates.date
+                      : "Brak danych"}
+                  </StyledDaysNum>
+                </DateWrapper>
+                <StyledSubParagraph2 small>
+                  Status na dzień:
+                  {institution.attributes.dates
+                    ? " " + institution.attributes.dates["date-situation-as-at"]
+                    : "Brak danych"}
+                </StyledSubParagraph2>
+              </InnerCard>
             </StyledDateCardsWrapper>
-
             <StyledBasicInfo margin={"15px 0 0 0"}>
               <div>
-                <SubTextBig>Telefon</SubTextBig>
-                <Text>{institution.attributes.phone}</Text>
+                <StyledSubParagraph1>Telefon</StyledSubParagraph1>
+                <StyledParagraph3>
+                  {institution.attributes.phone}
+                </StyledParagraph3>
               </div>
               <div>
-                <SubTextBig>Miejscowość</SubTextBig>
-                <Text>{institution.attributes.locality}</Text>
+                <StyledSubParagraph1>Miejscowość</StyledSubParagraph1>
+                <StyledParagraph3>
+                  {institution.attributes.locality}
+                </StyledParagraph3>
               </div>
               <div>
-                <SubTextBig>Ulica</SubTextBig>
-                <Text>{institution.attributes.address}</Text>
+                <StyledSubParagraph1>Ulica</StyledSubParagraph1>
+                <StyledParagraph3>
+                  {institution.attributes.address}
+                </StyledParagraph3>
               </div>
             </StyledBasicInfo>
             <InnerCard margin={"15px 0 0 0"}>
-              <SubTextBig>Nazwa świadczenia określonego przez NFZ</SubTextBig>
-              <Text>{institution.attributes.benefit}</Text>
-              <SubTextBig>Nazwa miejsca udzielania świadczeń</SubTextBig>
-              <Text>{institution.attributes.place}</Text>
+              <StyledSubParagraph1>
+                Nazwa świadczenia określonego przez NFZ
+              </StyledSubParagraph1>
+              <StyledParagraph3>
+                {institution.attributes.benefit}
+              </StyledParagraph3>
+              <StyledSubParagraph1>
+                Nazwa miejsca udzielania świadczeń
+              </StyledSubParagraph1>
+              <StyledParagraph3>
+                {institution.attributes.place}
+              </StyledParagraph3>
             </InnerCard>
             {showPage[index] ? (
               <InnerCardList margin={"15px 0 0 0"}>

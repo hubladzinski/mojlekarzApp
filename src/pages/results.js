@@ -1,37 +1,16 @@
 import React, { useState, useEffect } from "react"
 import styled from "styled-components"
 import { connect } from "react-redux"
-import MainLayout from "../layout/mainLayout"
-import InnerLayout from "../layout/innerLayout"
-import backgroundResults from "../assets/backgroundResults.svg"
-import Pagination from "../components/pagination"
-import ResultsItems from "../components/resultsItems"
-import BlueText from "../components/blueText"
-import Select from "../components/select"
+import BackgroundLayout from "../layout/BackgroundLayout"
+import Pagination from "../components/Pagination"
+import ResultsItems from "../components/ResultsItems"
+import BlueText from "../components/BlueText"
+import Select from "../components/Select"
+import { Heading2 } from "../components/Heading"
 
-const StyledWrapper = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: center;
-`
-
-const BackgroundContainer = styled.div`
-  position: fixed;
-  top: 10%;
-  right: 0;
-  bottom: -10%;
-  left: 0;
-  z-index: -1;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: bottom;
-  background-image: url(${backgroundResults});
-`
-
-const StyledH1 = styled.h1`
-  font-weight: 600;
-  font-size: ${({ theme }) => theme.font.size.m};
+const StyledHeading2 = styled(Heading2)`
   margin-top: 2em;
+  font-weight: 600;
 
   div:last-of-type {
     font-weight: 400;
@@ -41,7 +20,6 @@ const StyledH1 = styled.h1`
   @media (min-width: 768px) {
     display: flex;
     justify-content: space-between;
-    font-size: ${({ theme }) => theme.font.size.l};
 
     div:last-of-type {
       margin-top: 0;
@@ -61,53 +39,44 @@ const sortOptions = [
 ]
 
 const sortByAvgTime = (institutions, order) => {
-  if (order === "min") {
-    return institutions.sort((a, b) => {
-      if (a.attributes.statistics && b.attributes.statistics) {
-        return (
-          a.attributes.statistics["provider-data"]["average-period"] -
-          b.attributes.statistics["provider-data"]["average-period"]
-        )
+  return institutions.sort((a, b) => {
+    const { statistics: avgWaitTimeA } = a.attributes
+    const { statistics: avgWaitTimeB } = b.attributes
+
+    if (avgWaitTimeA || avgWaitTimeB) {
+      if (avgWaitTimeA && avgWaitTimeB) {
+        return order === "min"
+          ? avgWaitTimeA["provider-data"]["average-period"] -
+              avgWaitTimeB["provider-data"]["average-period"]
+          : avgWaitTimeB["provider-data"]["average-period"] -
+              avgWaitTimeA["provider-data"]["average-period"]
+      } else if (avgWaitTimeA && !avgWaitTimeB) {
+        return order === "min" ? -1 : 1
+      } else {
+        return order === "min" ? 1 : -1
       }
-      if (a.attributes.statistics && !b.attributes.statistics) return -1
-      if (!a.attributes.statistics && b.attributes.statistics) return 1
-    })
-  }
-  if (order === "max") {
-    return institutions.sort((a, b) => {
-      if (a.attributes.statistics && b.attributes.statistics) {
-        return (
-          b.attributes.statistics["provider-data"]["average-period"] -
-          a.attributes.statistics["provider-data"]["average-period"]
-        )
-      }
-    })
-  }
+    }
+    return null
+  })
 }
 
 const sortByDate = (institutions, order) => {
-  if (order === "min") {
-    return institutions.sort((a, b) => {
-      if (a.attributes.dates && b.attributes.dates) {
-        return (
-          new Date(a.attributes.dates.date).getTime() -
-          new Date(b.attributes.dates.date).getTime()
-        )
+  return institutions.sort((a, b) => {
+    const { dates: nearestDateA } = a.attributes
+    const { dates: nearestDateB } = b.attributes
+
+    if (nearestDateA || nearestDateB) {
+      if (nearestDateA && nearestDateB) {
+        const dateA = new Date(nearestDateA.date).getTime()
+        const dateB = new Date(nearestDateB.date).getTime()
+        return order === "min" ? dateA - dateB : dateB - dateA
+      } else if (nearestDateA && !nearestDateB) {
+        return order === "min" ? -1 : 1
+      } else {
+        return order === "min" ? 1 : -1
       }
-      if (a.attributes.dates && !b.attributes.dates) return -1
-      if (!a.attributes.dates && b.attributes.dates) return 1
-    })
-  }
-  if (order === "max") {
-    return institutions.sort((a, b) => {
-      if (a.attributes.dates && b.attributes.dates) {
-        return (
-          new Date(b.attributes.dates.date).getTime() -
-          new Date(a.attributes.dates.date).getTime()
-        )
-      }
-    })
-  }
+    } else return null
+  })
 }
 
 const filterByCity = (institutions, city) =>
@@ -123,10 +92,10 @@ const ResultsPage = ({ institutions, physycian, city, voievodeship }) => {
     }
   })
   const [currentPage, setCurrentPage] = useState(1)
-  const [resultsPerPage, setResultsPerPage] = useState(5)
+  const [resultsPerPage] = useState(5)
   const [sortOrder, setSortOrder] = useState("avgTimeMin")
   const [currentResults, setCurrentResults] = useState([])
-  const [place, setPlace] = useState(() => {
+  const [place] = useState(() => {
     if (city !== "") {
       return city
     } else {
@@ -171,35 +140,30 @@ const ResultsPage = ({ institutions, physycian, city, voievodeship }) => {
   }
 
   return (
-    <MainLayout>
-      <StyledWrapper>
-        <BackgroundContainer />
-        <InnerLayout>
-          <StyledH1>
-            <div>
-              <BlueText>{physycian}, </BlueText>
-              {place}
-            </div>
-            <div>Wyniki: {sortedInstitutions.length}</div>
-          </StyledH1>
-          <Select
-            text={sortOptions[0].name}
-            options={sortOptions}
-            handleChange={changeSort}
-            label={"sort"}
-            margin={"10px 0 0 0"}
-            labelText={"Sortowanie"}
-          />
-          <ResultsItems results={currentResults} />
-          <StyledPagination
-            resultsPerPage={resultsPerPage}
-            totalResults={sortedInstitutions.length}
-            currentPage={currentPage}
-            paginate={paginate}
-          />
-        </InnerLayout>
-      </StyledWrapper>
-    </MainLayout>
+    <BackgroundLayout>
+      <StyledHeading2 as="h1">
+        <div>
+          <BlueText>{physycian}, </BlueText>
+          {place}
+        </div>
+        <div>Wyniki: {sortedInstitutions.length}</div>
+      </StyledHeading2>
+      <Select
+        text={sortOptions[0].name}
+        options={sortOptions}
+        handleChange={changeSort}
+        label={"sort"}
+        margin={"10px 0 0 0"}
+        labelText={"Sortowanie"}
+      />
+      <ResultsItems results={currentResults} />
+      <StyledPagination
+        resultsPerPage={resultsPerPage}
+        totalResults={sortedInstitutions.length}
+        currentPage={currentPage}
+        paginate={paginate}
+      />
+    </BackgroundLayout>
   )
 }
 

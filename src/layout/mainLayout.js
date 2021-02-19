@@ -1,8 +1,8 @@
 import React from "react"
 import styled, { createGlobalStyle, ThemeProvider } from "styled-components"
 import theme from "../utils/theme"
-import Header from "../components/header"
-import SEO from "../components/seo"
+import Navbar from "../components/Navbar"
+import SEO from "../components/Seo"
 
 const GlobalStyle = createGlobalStyle`
 
@@ -44,7 +44,7 @@ const MainLayout = ({ children }) => {
       <ThemeProvider theme={theme}>
         <StyledLayout>
           <SEO />
-          <Header />
+          <Navbar />
           {children}
         </StyledLayout>
       </ThemeProvider>

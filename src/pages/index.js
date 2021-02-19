@@ -7,20 +7,23 @@ import {
   toggleCity,
   toggleVoievodeship,
 } from "../state/app"
-import MainLayout from "../layout/mainLayout"
-import InnerLayout from "../layout/innerLayout"
-import Card from "../components/card"
-import InnerCard from "../components/innerCard"
+import MainLayout from "../layout/MainLayout"
+import InnerLayout from "../layout/InnerLayout"
+import Card from "../components/Card"
+import InnerCard from "../components/InnerCard"
 import styled, { css } from "styled-components"
 import backgroundRotatedImg from "../assets/backgroundRotated.svg"
 import background from "../assets/background.svg"
-import BlueText from "../components/blueText"
-import Button from "../components/button"
-import Select from "../components/select"
-import DataList from "../components/dataList"
-import Loader from "../components/loader"
+import BlueText from "../components/BlueText"
+import Button from "../components/Button"
+import Select from "../components/Select"
+import DataList from "../components/DataList"
+import Loader from "../components/Loader"
+import { physicianTypes, voievodshipTypes } from "../utils/data"
+import { Heading } from "../components/Heading"
+import { fetchNFZData, updateCitiesArray } from "../utils/functions"
 
-const StyledWrapper = styled.div`
+const Wrapper = styled.div`
   flex: 1;
   display: flex;
   justify-content: center;
@@ -60,8 +63,7 @@ const StyledCardLower = styled(Card)`
   }
 `
 
-const StyledH2 = styled.h2`
-  font-size: ${({ theme }) => theme.font.size.m};
+const StyledHeading = styled(Heading)`
   font-weight: 400;
   text-align: center;
 
@@ -75,12 +77,12 @@ const BaseMessage = css`
   font-weight: 400;
 `
 
-const StyledErrorMessage = styled.p`
+const ErrorMessage = styled.p`
   ${BaseMessage}
   color: ${({ theme }) => theme.colors.timeBad};
 `
 
-const StyledInfoMessage = styled.p`
+const InfoMessage = styled.p`
   ${BaseMessage}
   color: ${({ theme }) => theme.colors.primary};
 `
@@ -95,94 +97,16 @@ const StyledInnerCard = styled(InnerCard)`
   align-items: center;
 `
 
-const StyledValidationNote = styled.div`
+const ValidationNote = styled.div`
   margin-top: 5px;
   font-size: ${({ theme }) => theme.font.size.xs};
   color: ${({ theme }) => theme.colors.primary};
 `
 
-const physicianTypes = [
-  { name: "Alergologia", code: "alergolog" },
-  { name: "Anestezjologia", code: "anestezjolog" },
-  { name: "Chirurgia", code: "chirurg" },
-  { name: "Dermatologia", code: "dermatolog" },
-  { name: "Gastroenterologia", code: "gastroenterolog" },
-  { name: "Geriatraia", code: "geriatr" },
-  { name: "Ginekologia", code: "ginekolog" },
-  { name: "Immunologia", code: "immunolog" },
-  { name: "Kardiologia", code: "kardiolog" },
-  { name: "Medycyna paliatywna", code: "paliat" },
-  { name: "Medycyna sądowa", code: "sąd" },
-  { name: "Medycyna sportowa", code: "sport" },
-  { name: "Nefrologia", code: "nefrolog" },
-  { name: "Neurologia", code: "neurolog" },
-  { name: "Okulistyka", code: "okulist" },
-  { name: "Onkologia", code: "onkolog" },
-  { name: "Ortopedia", code: "ortoped" },
-  { name: "Otolaryngologia", code: "otolaryngolog" },
-  { name: "Patologia", code: "patolog" },
-  { name: "Pediatria", code: "pediatr" },
-  { name: "Położnictwo", code: "położ" },
-  { name: "Psychiatria", code: "psychiatryczny" },
-  { name: "Pulmonologia", code: "pulmonolog" },
-  { name: "Radioterapia", code: "radiot" },
-  { name: "Rehabilitacja", code: "rehabilitacji" },
-  { name: "Reumatologia", code: "reumatolog" },
-  { name: "Seksuologia", code: "seksuolog" },
-  { name: "Toksykologia", code: "toksykolog" },
-  { name: "Urologia", code: "poradnia urologiczna" },
-  { name: "Wenerologia", code: "wnereolog" },
-]
-const voievodshipTypes = [
-  { name: "Dolnośląskie", code: "01" },
-  { name: "Kujawsko-pomorskie", code: "02" },
-  { name: "Lubelskie", code: "03" },
-  { name: "Lubuskie", code: "04" },
-  { name: "Łódzkie", code: "05" },
-  { name: "Małopolskie", code: "06" },
-  { name: "Mazowieckie", code: "07" },
-  { name: "Opolskie", code: "08" },
-  { name: "Podkarpackie", code: "09" },
-  { name: "Podlaskie", code: "10" },
-  { name: "Pomorskie", code: "11" },
-  { name: "Śląskie", code: "12" },
-  { name: "Świętokrzyskie", code: "13" },
-  { name: "Warmińsko-mazurskie", code: "14" },
-  { name: "Wielkopolskie", code: "15" },
-  { name: "Zachodniopomorskie", code: "16" },
-]
-
-async function getNFZData(url) {
-  let places = []
-  let NFZData = await fetch(url)
-  let parsedNFZData = await NFZData.json()
-  places.push(...parsedNFZData.data)
-
-  if (parsedNFZData.links.next && parsedNFZData.links.next !== null) {
-    let response = await getNFZData(
-      `https://api.nfz.gov.pl${parsedNFZData.links.next}`
-    )
-    places.push(...response)
-  }
-
-  return places
-}
-
-const updateCities = response => {
-  let array = [""]
-  response.forEach(item => {
-    if (!array.includes(item.attributes.locality))
-      array.push(item.attributes.locality)
-  })
-
-  return array
-}
-
 const IndexPage = ({ dispatch }) => {
   const [fetchingData, setFetchingData] = useState(false)
   const [isCitiesDataFetched, setIsCitiesDataFetched] = useState(false)
   const [rightCitySelected, setRightCitySelected] = useState(false)
-  const [showValidationError, setShowValidationError] = useState(false)
   const [selectedPhysician, setSelectedPhysician] = useState({
     name: "",
     code: "",
@@ -219,11 +143,11 @@ const IndexPage = ({ dispatch }) => {
 
   const fetchCities = async (benefit, province) => {
     setFetchingData(true)
-    let response = await getNFZData(
+    let response = await fetchNFZData(
       `https://api.nfz.gov.pl/app-itl-api/queues?limit=25&format=json&case=1&benefit=${benefit}&province=${province}`
     )
     setInstitutionsInVoievodeship(response)
-    setCities(updateCities(response))
+    setCities(updateCitiesArray(response))
     setIsCitiesDataFetched(true)
     setFetchingData(false)
   }
@@ -237,10 +161,8 @@ const IndexPage = ({ dispatch }) => {
     const isThisCityIncludedInList = cities.includes(selectedCity)
     if (isThisCityIncludedInList) {
       setRightCitySelected(true)
-      setShowValidationError(false)
     } else {
       setRightCitySelected(false)
-      setShowValidationError(true)
     }
   }, [selectedCity, cities])
 
@@ -248,29 +170,29 @@ const IndexPage = ({ dispatch }) => {
 
   useEffect(() => {
     dispatch(toggleInstitutions(institutionsInVoievodeship))
-  }, [institutionsInVoievodeship])
+  }, [institutionsInVoievodeship, dispatch])
 
   useEffect(() => {
     dispatch(togglePhysycian(selectedPhysician.name))
-  }, [selectedPhysician])
+  }, [selectedPhysician, dispatch])
 
   useEffect(() => {
     dispatch(toggleCity(selectedCity))
-  }, [selectedCity])
+  }, [selectedCity, dispatch])
 
   useEffect(() => {
     dispatch(toggleVoievodeship(selectedVoievodeship.name))
-  }, [selectedVoievodeship])
+  }, [selectedVoievodeship, dispatch])
 
   return (
     <MainLayout>
-      <StyledWrapper>
+      <Wrapper>
         <StyledInnerLayout>
           <StyledCardUpper>
-            <StyledH2>
+            <StyledHeading>
               <BlueText>Znajdź </BlueText>ośrodki, <BlueText>blisko </BlueText>
               Ciebie, świadczące usługi na <BlueText>NFZ</BlueText>
-            </StyledH2>
+            </StyledHeading>
           </StyledCardUpper>
           <StyledCardLower>
             <Select
@@ -286,7 +208,7 @@ const IndexPage = ({ dispatch }) => {
             />
             {fetchingData && (
               <StyledInnerCard margin={"15px 0 0 0"}>
-                <StyledInfoMessage>Pobieranie listy miast...</StyledInfoMessage>
+                <InfoMessage>Pobieranie listy miast...</InfoMessage>
                 <StyledLoader margin={"15px 0 0 0"} />
               </StyledInnerCard>
             )}
@@ -304,18 +226,18 @@ const IndexPage = ({ dispatch }) => {
               : isCitiesDataFetched &&
                 fetchingData === false && (
                   <InnerCard margin={"15px 0 0 0"}>
-                    <StyledErrorMessage>
+                    <ErrorMessage>
                       Nie znaleziono placówek ze specjalnością:{" "}
                       {selectedPhysician.name} dla województwa:{" "}
                       {selectedVoievodeship.name}
-                    </StyledErrorMessage>
+                    </ErrorMessage>
                   </InnerCard>
                 )}
             {isCitiesDataFetched && (
-              <StyledValidationNote>
+              <ValidationNote>
                 Wybierz miasto z listy, lub pozostaw pole puste by szukać w
                 całym województwie
-              </StyledValidationNote>
+              </ValidationNote>
             )}
             <Link to="/results">
               {cities.length > 0 &&
@@ -334,7 +256,7 @@ const IndexPage = ({ dispatch }) => {
             </Link>
           </StyledCardLower>
         </StyledInnerLayout>
-      </StyledWrapper>
+      </Wrapper>
     </MainLayout>
   )
 }

@@ -12,6 +12,7 @@ const StyledButton = styled.button`
   border: none;
   width: 100%;
   cursor: pointer;
+  text-align: center;
   ${space};
   ${color};
 `
