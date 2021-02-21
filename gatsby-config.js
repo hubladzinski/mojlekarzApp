@@ -6,7 +6,7 @@ module.exports = {
   siteMetadata: {
     title: `gdzie mój lekarz?!`,
     description: `Znajdź lekarza na NFZ, w twoim mieście. Wyszukaj ośrodki świadczące usługi na NFZ.`,
-    baseUrl: "https://www.gdziemojlekarz.pl",
+    baseUrl: "https://gdziemojlekarz.pl/",
     author: `@hublad`,
   },
   plugins: [

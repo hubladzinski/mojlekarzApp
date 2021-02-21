@@ -34,7 +34,7 @@ const StyledMenu = styled(Menu)`
   display: ${({ isMenuOpen }) => (isMenuOpen ? "block" : "none")};
 `
 
-const StyledH1 = styled.h1`
+const StyledH1 = styled.header`
   font-size: ${({ theme }) => theme.font.size.s};
   font-family: ${({ theme }) => theme.font.family.primary};
   font-weight: 300;
